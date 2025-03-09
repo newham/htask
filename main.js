@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { dialog, app, BrowserWindow, ipcMain } = require('electron');
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -38,7 +38,36 @@ function createWindow() {
     });
 
     mainWindow.loadFile('index.html');
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
+
+    mainWindow.on('close', function (e) {
+        // 检查是否有正在运行的进程
+        if (Object.keys(runningProcesses).length > 0) {
+
+            const choice = dialog.showMessageBoxSync(mainWindow, {
+                type: 'question',
+                buttons: ['取消', '确认关闭'],
+                title: '确认关闭',
+                message: `有${Object.keys(runningProcesses).length}个程序正在执行，确认关闭窗口吗？`
+            });
+            if (choice === 1) { // 用户选择了确认关闭
+                // 遍历所有正在运行的进程并终止
+                for (const fullCommand in runningProcesses) {
+                    const child = runningProcesses[fullCommand];
+                    child.kill();
+                    delete runningProcesses[fullCommand];
+                }
+                // 允许窗口关闭
+                mainWindow = null;
+            } else {
+                // 阻止窗口关闭
+                e.preventDefault();
+            }
+        } else {
+            // 没有正在运行的进程，直接关闭窗口
+            mainWindow = null;
+        }
+    });
 
     mainWindow.on('closed', function () {
         mainWindow = null;
@@ -55,7 +84,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform == 'darwin') app.quit();
 });
 
 // 监听来自渲染进程的命令执行请求
