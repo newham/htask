@@ -152,9 +152,34 @@
             justify-content: space-between;
         }
 
-        /* 卡片悬停样式 */
-        .card:hover {
-            background: #eee;
+        @keyframes breathing {
+            0% {
+                background-color: rgb(61, 169, 61);
+                border-color: rgb(61, 169, 61);
+            }
+
+            50% {
+                background-color: rgb(81, 189, 81);
+                border-color: rgb(81, 189, 81);
+            }
+
+            100% {
+                background-color: rgb(61, 169, 61);
+                border-color: rgb(61, 169, 61);
+            }
+        }
+
+        .running-card {
+            background-color: rgb(61, 169, 61);
+            border: 1px solid rgb(61, 169, 61);
+            color: white;
+            animation: breathing 2s infinite;
+        }
+
+        .running-card .card-type {
+            /* background-color: green; */
+            /* border-left: 2px solid green; */
+            color: whitesmoke;
         }
 
         .card-note {
@@ -163,6 +188,7 @@
         }
 
         .card-status {
+            display: none;
             padding: 5px 10px;
             /* border-radius: 5px; */
             /* color: white; */
@@ -207,15 +233,21 @@
             /* 修改为深绿色悬停背景 */
         }
 
-        /* 新增命令类型样式 */
+        .card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         .card-type {
-            padding: 5px 10px;
-            /* border-radius: 15px; */
-            /* background-color: #f0f0f0; */
-            /* border-left: 2px solid #b4cee3; */
-            margin: 0 10px;
-            min-width: 50px;
-            text-align: center;
+            font-size: 0.8em;
+            /* 设置为小字 */
+            padding: 0;
+            margin: 0;
+            min-width: auto;
+            text-align: left;
+            color: #aaa;
         }
 
         .card-btn {
@@ -230,16 +262,6 @@
         .card-btn:hover {
             opacity: 0.8;
             /* 通用的悬停效果 */
-        }
-
-        nav button {
-            background-color: #3d8414;
-            color: white;
-            /* 移除重复样式 */
-        }
-
-        nav button:hover {
-            background-color: rgb(52, 110, 18);
         }
 
         .card-start-btn {
@@ -484,7 +506,7 @@
                     <textarea id="command-input" rows="4" cols="50" v-model="commandInput"></textarea>
                 </div>
                 <div class="button-container">
-                    <button class="card-delete-btn" @click="deleteCommand(editIndex)">删除</button>
+                    <button v-show="editIndex>-1" class="card-delete-btn" @click="deleteCommand(editIndex)">删除</button>
                     <button class="cancel-btn" id="cancel-command-btn" @click="hideModal">取消</button>
                     <button class="save-btn" id="save-command-btn" @click="saveCommand">确认</button>
                 </div>
@@ -492,9 +514,13 @@
         </div>
 
         <div class="main">
-            <div class="card" v-for="(command, index) in commands" :key="index">
-                <div class="card-note">{{ command.note }}</div>
-                <div class="card-type">{{ command.type }}</div>
+            <div class="card" v-for="(command, index) in commands" :key="index"
+                :class="{ 'running-card': command.status === 'running' }">
+                <!-- 新增一个容器来包裹 card-note 和 card-type -->
+                <div class="card-info">
+                    <div class="card-note">{{ command.note }}</div>
+                    <div class="card-type">{{ command.type }}</div>
+                </div>
                 <div class="card-status"
                     :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
                     command.status }}</div>
@@ -655,6 +681,13 @@
                 // this.commandOutputs[fullCommand] = output;
                 // this.output = output;
                 this.commands[index].output += output; // 更新命令输出
+                // 将输出按行分割
+                const lines = this.commands[index].output.split('\n');
+
+                // 如果行数超过 100 行，截取最后 100 行
+                if (lines.length > 100) {
+                    this.commands[index].output = lines.slice(-100).join('\n');
+                }
                 // 滚动到输出区域的底部
                 const outputElement = document.getElementById('output-' + index);
                 outputElement.scrollTop = outputElement.scrollHeight;
