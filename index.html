@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命令管理器</title>
+    <script src="assets/js/vue.js"></script>
+    <style>
+        /* 设置 body 和 html 的 margin 为 0 */
+        html,
+        body {
+            margin: 0;
+        }
+
+        /* 导航栏样式 */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        nav button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        nav button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 对话框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* 修改部分 */
+        .modal-content input,
+        .modal-content textarea {
+            /* 添加 textarea 选择器 */
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            /* 添加这一行 */
+        }
+
+        .modal-content button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-content .save-btn {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .modal-content .save-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-content .cancel-btn {
+            background-color: #ccc;
+            margin-right: 10px;
+        }
+
+        .modal-content .cancel-btn:hover {
+            background-color: #999;
+        }
+
+        .modal-content p {
+            /* 自动换行 */
+            word-wrap: break-word;
+        }
+
+        /* 添加按钮容器样式 */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* 卡片样式 */
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-note {
+            flex: 1;
+        }
+
+        .card-status {
+            padding: 5px 10px;
+            /* border-radius: 5px; */
+            /* color: white; */
+            margin: 0 10px;
+        }
+
+        .card-status.running {
+            /* background-color: green; */
+            border-left: 2px solid green;
+            color: green;
+        }
+
+        .card-status.stopped {
+            /* background-color: red; */
+            border-left: 2px solid red;
+            color: red;
+        }
+
+        .card-start-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .card-start-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 新增命令类型样式 */
+        .card-type {
+            padding: 5px 10px;
+            /* border-radius: 15px; */
+            /* background-color: #f0f0f0; */
+            border-left: 2px solid #f0f0f0;
+            margin: 0 10px;
+        }
+
+        .card-btn {
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .card-btn:hover {
+            opacity: 0.8;
+            /* 通用的悬停效果 */
+        }
+
+        nav button {
+            background-color: #007BFF;
+            color: white;
+            /* 移除重复样式 */
+        }
+
+        nav button:hover {
+            background-color: #0056b3;
+        }
+
+        .card-start-btn {
+            background-color: #007BFF;
+            color: white;
+            /* 移除重复样式 */
+        }
+
+        .card-start-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .card-delete-btn {
+            background-color: #dc3545;
+            color: white;
+            /* 移除重复样式 */
+        }
+
+        .card-delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .card-edit-btn {
+            background-color: #ffc107;
+            color: white;
+            /* 移除重复样式 */
+        }
+
+        .card-edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .card-output {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background-color: black;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            overflow: auto;
+            z-index: 1000;
+            /* 添加 Flexbox 布局 */
+            overflow: hidden;
+        }
+
+        .card-output button.close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        .card-output textarea {
+            /* 修改为 flex-grow: 1 以占据剩余空间 */
+            overflow-y: auto;
+            overflow-x: auto;
+            height: calc(100% - 10px);
+            margin-left: 5px;
+            width: calc(100% - 15px);
+            background-color: black;
+            color: white;
+            border: none;
+            resize: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 添加 id="app" 的 div -->
+    <div id="app">
+        <!-- 导航栏 -->
+        <nav>
+            <div>
+                <button id="add-command-btn">添加</button>
+            </div>
+        </nav>
+
+        <!-- 对话框 -->
+        <div id="add-command-modal" class="modal">
+            <div class="modal-content">
+                <h3>添加命令</h3>
+                <label for="command-note">命令备注</label>
+                <!-- 使用 v-model 绑定 commandNote -->
+                <input type="text" id="command-note" v-model="commandNote">
+                <label for="command-type">命令类型</label>
+                <!-- 使用 v-model 绑定 commandType -->
+                <select id="command-type" v-model="commandType">
+                    <option value="shell">shell</option>
+                    <option value="python">python</option>
+                </select>
+                <!-- 新增脚本位置选择文件选择框 -->
+                <div v-show="commandType == 'python'">
+                    <label for="script-file">脚本位置</label>
+                    <p>{{scriptFile}}</p>
+                    <input type="file" id="script-file">
+                </div>
+                <div v-show="commandType == 'shell'">
+                    <label for="command-input">命令</label>
+                    <!-- 使用 v-model 绑定 commandInput -->
+                    <textarea id="command-input" rows="4" cols="50" v-model="commandInput"></textarea>
+                </div>
+                <div class="button-container">
+                    <button class="cancel-btn" id="cancel-command-btn" @click="hideModal">取消</button>
+                    <button class="save-btn" id="save-command-btn" @click="saveCommand">确认</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="card" v-for="(command, index) in commands" :key="index">
+                <div class="card-note">{{ command.note }}</div>
+                <div class="card-type">{{ command.type }}</div>
+                <div class="card-status"
+                    :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
+                    command.status }}</div>
+                <button class="card-btn card-start-btn" @click="toggleStatus(index)">{{ command.status === 'running' ?
+                    '停止' :
+                    '开始'
+                    }}</button>
+                <!-- 新增编辑按钮 -->
+                <button class="card-btn card-edit-btn" @click="editCommand(index)">编辑</button>
+                <button class="card-btn card-delete-btn" @click="deleteCommand(index)">删除</button>
+                <button class="card-btn card-start-btn" @click="showOutput(index)">输出</button>
+                <div class="card-output">
+                    <!-- 添加一个关闭按钮在右上角 -->
+                    <button class="close-btn" @click="showOutput(-1)">关闭</button>
+                    <textarea v-model="command.output" :id="'output-' + index"></textarea>
+                </div>
+            </div>
+
+        </div>
+        <!-- 在 HTML 中添加显示命令输出的区域 -->
+        <!-- <div v-for="(output, command) in commandOutputs" :key="command">
+            <h3>{{ command }}</h3>
+            <pre>{{ output }}</pre>
+        </div> -->
+        <!-- <textarea v-model="output"></textarea> -->
+
+
+    </div>
+
+</body>
+<script>
+    const { ipcRenderer, webUtils } = require('electron');
+    const util = require('util');
+    // 修改 el 属性
+    new Vue({
+        el: '#app',
+        data: {
+            commands: [],
+            commandNote: '',
+            commandType: 'shell',
+            scriptFile: '',
+            commandInput: '',
+            // 新增编辑索引
+            editIndex: -1,
+            // 存储命令输出
+            commandOutputs: {},
+            output: ''
+        },
+        methods: {
+            showModal(isEdit = false) {
+                if (!isEdit) {
+                    // 只有在添加操作时才清空数据
+                    this.commandNote = '';
+                    this.commandType = 'shell';
+                    this.scriptFile = '';
+                    this.commandInput = '';
+                    this.editIndex = -1;
+                }
+                document.getElementById('add-command-modal').style.display = 'flex';
+            },
+            hideModal() {
+                document.getElementById('add-command-modal').style.display = 'none';
+            },
+            saveCommand() {
+                if ((this.commandType == 'shell' && this.commandNote && this.commandInput) || (this.commandType == 'python' && this.commandNote && this.scriptFile)) {
+                    const newCommand = {
+                        note: this.commandNote,
+                        type: this.commandType,
+                        file: this.scriptFile,
+                        command: this.commandInput,
+                        status: 'stopped',
+                        output: ''
+                    };
+                    if (this.editIndex !== -1) {
+                        // 编辑已有命令，使用浅拷贝复制属性
+                        Object.assign(this.commands[this.editIndex], newCommand);
+                        this.editIndex = -1;
+                        document.getElementById('script-file').value = null;
+                    } else {
+                        // 新增命令
+                        this.commands.push(newCommand);
+                    }
+                    // 发送写入命令数据请求到主进程
+                    ipcRenderer.send('write-commands', this.commands);
+                    this.commandNote = '';
+                    this.commandType = 'python';
+                    this.scriptFile = '';
+                    this.commandInput = '';
+                    this.hideModal();
+                    // console.log(this.commands);
+                }
+            },
+            toggleStatus(index) {
+                const command = this.commands[index];
+                if (command.status === 'stopped') {
+                    command.status = 'running';
+                    command.output = ''; // 清空命令输出
+                    // 发送命令到主进程
+                    ipcRenderer.send('execute-command', { index, command });
+                    // 初始化命令输出
+                    // this.commandOutputs[fullCommand] = '';
+                    this.showOutput(index) // 显示命令输出区域
+                } else {
+                    // 停止命令执行逻辑
+                    // 发送停止命令到主进程
+                    ipcRenderer.send('stop-command', { index, command });
+                }
+            },
+            showOutput(index) {
+                // 遍历所有的 card-output 元素，将它们的 display 属性设置为 none
+                const cardOutputs = document.querySelectorAll('.card-output');
+                cardOutputs.forEach((cardOutput, i) => {
+                    if (i == -1) {
+                        cardOutput.style.display = 'none';
+                    } else if (i === index) {
+                        cardOutput.style.display = 'block';
+                    } else
+                        cardOutput.style.display = 'none';
+                });
+            },
+            deleteCommand(index) {
+                if (confirm('确定要删除该命令吗？')) {
+                    this.commands.splice(index, 1);
+                    // 发送写入命令数据请求到主进程
+                    ipcRenderer.send('write-commands', this.commands);
+                }
+            },
+            // 新增编辑命令的方法
+            editCommand(index) {
+                const command = this.commands[index];
+                this.commandNote = command.note;
+                this.commandType = command.type;
+                this.scriptFile = command.file;
+                this.commandInput = command.command;
+                this.editIndex = index;
+                // 调用 showModal 方法并传入 true 表示编辑操作
+                this.showModal(true);
+            }
+        },
+        mounted() {
+            // 请求读取命令数据
+            ipcRenderer.send('read-commands');
+            // 监听主进程返回的命令数据
+            ipcRenderer.on('commands-read', (event, commands) => {
+                this.commands = commands;
+            });
+            document.getElementById('add-command-btn').addEventListener('click', () => this.showModal(false));
+            document.getElementById('cancel-command-btn').addEventListener('click', this.hideModal);
+            document.getElementById('script-file').addEventListener('change', (e) => {
+                console.log('change', webUtils.getPathForFile(e.target.files[0]));
+                this.scriptFile = webUtils.getPathForFile(e.target.files[0]);
+                // console.log('scriptFile', this.scriptFile);
+            });// 监听主进程返回的命令输出
+            ipcRenderer.on('command-output', (event, { index, output }) => {
+                // console.log(index, cmd, output);
+                // if (cmd === fullCommand) {
+                // this.commandOutputs[fullCommand] = output;
+                // this.output = output;
+                this.commands[index].output += output; // 更新命令输出
+                // 滚动到输出区域的底部
+                const outputElement = document.getElementById('output-' + index);
+                outputElement.scrollTop = outputElement.scrollHeight;
+                // this.commandOutputs[cmd] = output;
+                // console.log(this.commands[index]);
+                // }
+            });
+            // 监听主进程返回的命令执行完成结果
+            ipcRenderer.on('command-executed', (event, { index, code }) => {
+                // if (cmd === fullCommand) {
+                console.log('command-executed', index, code);
+                this.commands[index].status = 'stopped';
+            });
+        }
+    });
+</script>
+
+</html>
