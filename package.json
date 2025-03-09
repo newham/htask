@@ -1,13 +1,12 @@
 {
   "name": "htask",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CMD任务管理器",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "test": "electron . -t",
-    "build_mac": "electron-builder build --mac --arm64",
-    "build:css": "tailwindcss build styles.css -o dist/output.css"
+    "build_mac": "electron-builder build --mac --arm64"
   },
   "keywords": [
     "markdown"
@@ -18,21 +17,10 @@
     "directories": {
       "output": "build"
     },
-    "fileAssociations": [
-      {
-        "ext": [
-          "md"
-        ],
-        "description": "Markdown File",
-        "role": "Viewer",
-        "isPackage": false,
-        "icon": "./assets/img/icons8-file-md-120.icns"
-      }
-    ],
     "mac": {
-      "icon": "./assets/img/icon.icns",
+      "icon": "./assets/img/icons8-cmd-256(Mac).icns",
       "target": {
-        "target": "dmg",
+        "target": "dir",
         "arch": "arm64"
       }
     }
@@ -41,10 +29,6 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^32.1.2",
-    "electron-builder": "^25.0.5",
-    "tailwindcss": "^4.0.12"
-  },
-  "dependencies": {
-    "xterm": "^5.3.0"
+    "electron-builder": "^25.0.5"
   }
 }

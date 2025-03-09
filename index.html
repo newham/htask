@@ -11,13 +11,27 @@
         html,
         body {
             margin: 0;
+            font-size: 13px;
         }
 
         /* 导航栏样式 */
         nav {
-            background-color: #333;
+            background-color: #f3f3f3;
             color: white;
             padding: 15px;
+            border-bottom: 1px solid #ccc;
+            position: fixed;
+            /* 设置为固定定位 */
+            top: 0;
+            /* 固定在页面顶部 */
+            left: 0;
+            /* 从页面左侧开始 */
+            width: 100%;
+            /* 宽度覆盖整个页面 */
+            box-sizing: border-box;
+            /* 确保内边距和边框包含在宽度内 */
+            z-index: 1000;
+            /* 设置 z-index，确保导航栏在最上层 */
         }
 
         nav a {
@@ -38,6 +52,15 @@
 
         nav button:hover {
             background-color: #0056b3;
+        }
+
+        .main {
+            margin-top: 71px;
+            /* nav 的高度加上边框的高度 */
+            height: calc(100vh - 71px);
+            /* 100vh 是视口高度，减去 nav 的高度 */
+            overflow-y: auto;
+            /* 如果内容超出高度，显示滚动条 */
         }
 
         /* 对话框样式 */
@@ -87,6 +110,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-left: 10px;
         }
 
         .modal-content .save-btn {
@@ -100,7 +124,6 @@
 
         .modal-content .cancel-btn {
             background-color: #ccc;
-            margin-right: 10px;
         }
 
         .modal-content .cancel-btn:hover {
@@ -129,7 +152,13 @@
             justify-content: space-between;
         }
 
+        /* 卡片悬停样式 */
+        .card:hover {
+            background: #eee;
+        }
+
         .card-note {
+            font-weight: bold;
             flex: 1;
         }
 
@@ -138,31 +167,44 @@
             /* border-radius: 5px; */
             /* color: white; */
             margin: 0 10px;
+            min-width: 50px;
+            text-align: center;
         }
 
         .card-status.running {
             /* background-color: green; */
-            border-left: 2px solid green;
+            /* border-left: 2px solid green; */
             color: green;
         }
 
         .card-status.stopped {
             /* background-color: red; */
-            border-left: 2px solid red;
-            color: red;
+            /* border-left: 2px solid gray; */
+            color: gray;
         }
 
         .card-start-btn {
-            background-color: #007BFF;
+            background-color: #28a745;
+            /* 修改为绿色背景 */
             color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
+            /* 移除重复样式 */
         }
 
         .card-start-btn:hover {
-            background-color: #0056b3;
+            background-color: #218838;
+            /* 修改为深绿色悬停背景 */
+        }
+
+        .card-output-btn {
+            background-color: #504f52;
+            /* 修改为绿色背景 */
+            color: white;
+            /* 移除重复样式 */
+        }
+
+        .card-output-btn:hover {
+            background-color: black;
+            /* 修改为深绿色悬停背景 */
         }
 
         /* 新增命令类型样式 */
@@ -170,16 +212,19 @@
             padding: 5px 10px;
             /* border-radius: 15px; */
             /* background-color: #f0f0f0; */
-            border-left: 2px solid #f0f0f0;
+            /* border-left: 2px solid #b4cee3; */
             margin: 0 10px;
+            min-width: 50px;
+            text-align: center;
         }
 
         .card-btn {
             border: none;
             padding: 5px 10px;
-            border-radius: 5px;
+            border-radius: 20px;
             cursor: pointer;
             margin-left: 5px;
+            /* font-size: 10px; */
         }
 
         .card-btn:hover {
@@ -188,23 +233,25 @@
         }
 
         nav button {
-            background-color: #007BFF;
+            background-color: #3d8414;
             color: white;
             /* 移除重复样式 */
         }
 
         nav button:hover {
-            background-color: #0056b3;
+            background-color: rgb(52, 110, 18);
         }
 
         .card-start-btn {
             background-color: #007BFF;
+            /* 修改为绿色背景 */
             color: white;
             /* 移除重复样式 */
         }
 
         .card-start-btn:hover {
             background-color: #0056b3;
+            /* 修改为深绿色悬停背景 */
         }
 
         .card-delete-btn {
@@ -248,10 +295,13 @@
             position: fixed;
             top: 20px;
             right: 20px;
+            background-color: red;
+            color: white;
         }
 
         .card-output textarea {
             /* 修改为 flex-grow: 1 以占据剩余空间 */
+            flex-grow: 1;
             overflow-y: auto;
             overflow-x: auto;
             height: calc(100% - 10px);
@@ -262,6 +312,140 @@
             border: none;
             resize: none;
         }
+
+        /* 新增选中时无边框样式 */
+        .card-output textarea:focus {
+            outline: none;
+        }
+
+        /* WebKit 浏览器滚动条样式 */
+        .card-output textarea::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .card-output textarea::-webkit-scrollbar-track {
+            background-color: black;
+        }
+
+        .card-output textarea::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+
+        .card-output textarea::-webkit-scrollbar-thumb:hover {
+            background-color: #777;
+        }
+
+        /* Firefox 浏览器滚动条样式 */
+        .card-output textarea {
+            scrollbar-color: #555 black;
+            scrollbar-width: thin;
+        }
+
+        #command-type {
+            width: 100%;
+            /* 设置宽度为父容器的 100% */
+            padding: 10px;
+            /* 添加内边距 */
+            margin-bottom: 15px;
+            /* 底部外边距 */
+            border: 1px solid #ccc;
+            /* 边框样式 */
+            border-radius: 5px;
+            /* 边框圆角 */
+            box-sizing: border-box;
+            /* 确保内边距和边框包含在宽度内 */
+            appearance: none;
+            /* 移除浏览器默认样式 */
+            -webkit-appearance: none;
+            /* 针对 Safari 和 Chrome */
+            -moz-appearance: none;
+            /* 针对 Firefox */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="5"><polygon points="0,0 10,0 5,5"/></svg>');
+            /* 添加自定义下拉箭头 */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            /* 箭头位置 */
+            background-size: 10px;
+            /* 箭头大小 */
+        }
+
+        #script-file {
+            width: 100%;
+            /* 设置宽度为父容器的 100% */
+            padding: 10px;
+            /* 添加内边距 */
+            margin-bottom: 15px;
+            /* 底部外边距 */
+            border: 1px solid #ccc;
+            /* 边框样式 */
+            border-radius: 5px;
+            /* 边框圆角 */
+            box-sizing: border-box;
+            /* 确保内边距和边框包含在宽度内 */
+            background-color: white;
+            /* 背景颜色 */
+            font-size: 14px;
+            /* 字体大小 */
+            color: #333;
+            /* 字体颜色 */
+        }
+
+        /* 自定义文件选择按钮的样式 */
+        #script-file::-webkit-file-upload-button {
+            background-color: #007BFF;
+            /* 按钮背景颜色 */
+            color: white;
+            /* 按钮字体颜色 */
+            border: none;
+            /* 移除按钮边框 */
+            padding: 8px 15px;
+            /* 按钮内边距 */
+            border-radius: 5px;
+            /* 按钮圆角 */
+            cursor: pointer;
+            /* 鼠标指针样式 */
+        }
+
+        #script-file::-webkit-file-upload-button:hover {
+            background-color: #0056b3;
+            /* 鼠标悬停时按钮背景颜色 */
+        }
+
+        /* 针对 Firefox 浏览器的样式 */
+        #script-file::file-selector-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #script-file::file-selector-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 新增样式，用于显示脚本位置的段落 */
+        .script-file-path {
+            font-size: 14px;
+            /* 字体大小 */
+            color: #333;
+            /* 字体颜色 */
+            margin: 5px 0;
+            /* 上下外边距 */
+            white-space: nowrap;
+            /* 不换行 */
+            overflow: hidden;
+            /* 溢出隐藏 */
+            text-overflow: ellipsis;
+            /* 溢出显示省略号 */
+        }
+
+        .button-container button {
+            border-radius: 20px;
+        }
     </style>
 </head>
 
@@ -271,7 +455,7 @@
         <!-- 导航栏 -->
         <nav>
             <div>
-                <button id="add-command-btn">添加</button>
+                <button id="add-command-btn">﹢</button>
             </div>
         </nav>
 
@@ -291,8 +475,8 @@
                 <!-- 新增脚本位置选择文件选择框 -->
                 <div v-show="commandType == 'python'">
                     <label for="script-file">脚本位置</label>
-                    <p>{{scriptFile}}</p>
-                    <input type="file" id="script-file">
+                    <p class="script-file-path">{{scriptFile}}</p>
+                    <input type="file" id="script-file" accept=".py">
                 </div>
                 <div v-show="commandType == 'shell'">
                     <label for="command-input">命令</label>
@@ -300,6 +484,7 @@
                     <textarea id="command-input" rows="4" cols="50" v-model="commandInput"></textarea>
                 </div>
                 <div class="button-container">
+                    <button class="card-delete-btn" @click="deleteCommand(editIndex)">删除</button>
                     <button class="cancel-btn" id="cancel-command-btn" @click="hideModal">取消</button>
                     <button class="save-btn" id="save-command-btn" @click="saveCommand">确认</button>
                 </div>
@@ -313,17 +498,17 @@
                 <div class="card-status"
                     :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
                     command.status }}</div>
-                <button class="card-btn card-start-btn" @click="toggleStatus(index)">{{ command.status === 'running' ?
-                    '停止' :
-                    '开始'
-                    }}</button>
+                <button class="card-btn"
+                    :class="{ 'card-start-btn': command.status === 'stopped', 'card-delete-btn': command.status === 'running' }"
+                    @click="toggleStatus(index)">
+                    {{ command.status === 'running' ? '停止' : '运行' }}
+                </button>
                 <!-- 新增编辑按钮 -->
                 <button class="card-btn card-edit-btn" @click="editCommand(index)">编辑</button>
-                <button class="card-btn card-delete-btn" @click="deleteCommand(index)">删除</button>
-                <button class="card-btn card-start-btn" @click="showOutput(index)">输出</button>
+                <button class="card-btn card-output-btn" @click="showOutput(index)">输出</button>
                 <div class="card-output">
                     <!-- 添加一个关闭按钮在右上角 -->
-                    <button class="close-btn" @click="showOutput(-1)">关闭</button>
+                    <button class="card-btn close-btn" @click="showOutput(-1)">关闭</button>
                     <textarea v-model="command.output" :id="'output-' + index"></textarea>
                 </div>
             </div>
@@ -431,10 +616,11 @@
                 });
             },
             deleteCommand(index) {
-                if (confirm('确定要删除该命令吗？')) {
+                if (confirm('确定要删除: ' + this.commands[index].note + '?')) {
                     this.commands.splice(index, 1);
                     // 发送写入命令数据请求到主进程
                     ipcRenderer.send('write-commands', this.commands);
+                    this.hideModal();
                 }
             },
             // 新增编辑命令的方法

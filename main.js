@@ -122,7 +122,7 @@ ipcMain.on('execute-command', (event, { index, command: commandObj }) => {
 
 // 监听来自渲染进程的停止命令请求
 ipcMain.on('stop-command', (event, { index, command }) => {
-    console.log('停止命令', index);
+    console.log('停止命令', command.type, command.type === 'python' ? command.file : command.command, index);
     let child = runningProcesses[`child-${index}`];
     if (child) {
         // python 需要pkill终止进程
@@ -149,7 +149,6 @@ app.on('will-quit', (event) => {
     const commands = readCommandsFromFile();
     commands.forEach(command => {
         command.status = 'stopped'; // 修改状态为停止
-        command.output = '';    // 清空输出
     });
     writeCommandsToFile(commands);// 保存修改后的数据
     console.log('应用即将退出');
