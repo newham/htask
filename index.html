@@ -150,6 +150,30 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            /* 允许子元素换行 */
+        }
+
+        .card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* 媒体查询，当页面宽度小于 600px 时，将 card-actions 放到下一行 */
+        @media (max-width: 600px) {
+            .card-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
         }
 
         @keyframes breathing {
@@ -233,12 +257,7 @@
             /* 修改为深绿色悬停背景 */
         }
 
-        .card-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
+
 
         .card-type {
             font-size: 0.8em;
@@ -521,21 +540,24 @@
                     <div class="card-note">{{ command.note }}</div>
                     <div class="card-type">{{ command.type }}</div>
                 </div>
-                <div class="card-status"
-                    :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
-                    command.status }}</div>
-                <button class="card-btn"
-                    :class="{ 'card-start-btn': command.status === 'stopped', 'card-delete-btn': command.status === 'running' }"
-                    @click="toggleStatus(index)">
-                    {{ command.status === 'running' ? '停止' : '运行' }}
-                </button>
-                <!-- 新增编辑按钮 -->
-                <button class="card-btn card-edit-btn" @click="editCommand(index)">编辑</button>
-                <button class="card-btn card-output-btn" @click="showOutput(index)">输出</button>
-                <div class="card-output">
-                    <!-- 添加一个关闭按钮在右上角 -->
-                    <button class="card-btn close-btn" @click="showOutput(-1)">关闭</button>
-                    <textarea v-model="command.output" :id="'output-' + index"></textarea>
+                <!-- 新增一个 div 包裹相关内容 -->
+                <div class="card-actions">
+                    <div class="card-status"
+                        :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
+                        command.status }}</div>
+                    <button class="card-btn"
+                        :class="{ 'card-start-btn': command.status === 'stopped', 'card-delete-btn': command.status === 'running' }"
+                        @click="toggleStatus(index)">
+                        {{ command.status === 'running' ? '停止' : '运行' }}
+                    </button>
+                    <!-- 新增编辑按钮 -->
+                    <button class="card-btn card-edit-btn" @click="editCommand(index)">编辑</button>
+                    <button class="card-btn card-output-btn" @click="showOutput(index)">输出</button>
+                    <div class="card-output">
+                        <!-- 添加一个关闭按钮在右上角 -->
+                        <button class="card-btn close-btn" @click="showOutput(-1)">关闭</button>
+                        <textarea v-model="command.output" :id="'output-' + index"></textarea>
+                    </div>
                 </div>
             </div>
 
