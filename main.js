@@ -130,14 +130,14 @@ ipcMain.on('execute-command', (event, { index, command: commandObj }) => {
         // 监听子进程的输出
         child.stdout.on('data', (data) => {
             if (mainWindow && mainWindow.webContents) {
-                mainWindow.webContents.send('command-output', { index, output: data.toString() });
+                mainWindow.webContents.send('command-output', { index, output: data.toString('utf8') });
             }
         });
 
         // 监听子进程的错误输出
         child.stderr.on('data', (data) => {
             if (mainWindow && mainWindow.webContents) {
-                mainWindow.webContents.send('command-output', { index, output: data.toString() });
+                mainWindow.webContents.send('command-output', { index, output: data.toString('utf8') });
             }
         });
 
