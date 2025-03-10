@@ -146,13 +146,19 @@
         .card {
             border: 1px solid #ccc;
             border-radius: 5px;
-            padding: 10px;
+            padding: 10px 10px;
+            min-height: 40px;
             margin: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
+            /* flex-wrap: wrap; */
             /* 允许子元素换行 */
+        }
+
+        .card:hover .card-actions {
+            display: flex;
+            /* 鼠标悬停在 .card 上时显示 */
         }
 
         .card-info {
@@ -163,13 +169,18 @@
         }
 
         .card-actions {
-            display: flex;
+            display: none;
+            /* 默认隐藏 */
+            /* display: flex; */
             align-items: center;
             justify-content: flex-end;
+            height: 100%;
+            min-height: inherit;
+            /* 继承 .card 的最小高度 */
         }
 
         /* 媒体查询，当页面宽度小于 600px 时，将 card-actions 放到下一行 */
-        @media (max-width: 600px) {
+        @media (max-width: 300px) {
             .card-actions {
                 width: 100%;
                 justify-content: flex-end;
@@ -258,8 +269,6 @@
             /* 修改为深绿色悬停背景 */
         }
 
-
-
         .card-type {
             font-size: 0.8em;
             /* 设置为小字 */
@@ -272,11 +281,14 @@
 
         .card-btn {
             border: none;
-            padding: 5px 10px;
-            border-radius: 20px;
+            /* padding: 5px 10px; */
+            /* border-radius: 20px; */
             cursor: pointer;
-            margin-left: 5px;
+            /* margin-left: 5px; */
             /* font-size: 10px; */
+            height: 100%;
+            line-height: 100%;
+            padding: 10px 10px;
         }
 
         .card-btn:hover {
@@ -334,6 +346,9 @@
         }
 
         .card-output button.close-btn {
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
             position: fixed;
             top: 20px;
             right: 20px;
@@ -383,6 +398,16 @@
         .card-output textarea {
             scrollbar-color: #555 black;
             scrollbar-width: thin;
+        }
+
+        .left-radius {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .right-radius {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
         }
 
         #command-type {
@@ -546,17 +571,17 @@
                     <div class="card-status"
                         :class="{ 'running': command.status === 'running', 'stopped': command.status === 'stopped' }">{{
                         command.status }}</div>
-                    <button class="card-btn"
+                    <button class="card-btn left-radius"
                         :class="{ 'card-start-btn': command.status === 'stopped', 'card-delete-btn': command.status === 'running' }"
                         @click="toggleStatus(index)">
                         {{ command.status === 'running' ? '停止' : '运行' }}
                     </button>
                     <!-- 新增编辑按钮 -->
                     <button class="card-btn card-edit-btn" @click="editCommand(index)">编辑</button>
-                    <button class="card-btn card-output-btn" @click="showOutput(index)">输出</button>
+                    <button class="card-btn card-output-btn right-radius" @click="showOutput(index)">输出</button>
                     <div class="card-output">
                         <!-- 添加一个关闭按钮在右上角 -->
-                        <button class="card-btn close-btn" @click="showOutput(-1)">关闭</button>
+                        <button class="close-btn" @click="showOutput(-1)">关闭</button>
                         <textarea v-model="command.output" :id="'output-' + index"></textarea>
                     </div>
                 </div>
