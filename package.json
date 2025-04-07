@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "test": "electron . -t",
-    "build_mac": "export LANG=zh_CN.UTF-8 && electron-builder build --mac --arm64"
+    "build_mac": "electron-builder build --mac --arm64",
+    "build_linux": "electron-builder build --linux"
   },
   "keywords": [
     "markdown"
@@ -23,6 +24,12 @@
         "target": "dir",
         "arch": "arm64"
       }
+    },
+    "linux": {
+      "icon": "./asserts/img/icon.png",
+      "target": [
+        "AppImage"
+      ]
     }
   },
   "author": "newham",
